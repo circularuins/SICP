@@ -1,3 +1,7 @@
+(define (square x)
+  (* x x))
+
+
 ;;; 1.7
 ;; (define (sqrt x)
 ;;   (the y (and (>= y 0)
@@ -26,3 +30,10 @@
 (sqrt 3)
 (sqrt (+ (sqrt 2) (sqrt 3)))
 (square (sqrt 1000))
+
+(define (f x y)
+  (let ((a (+ 1 (* x y)))
+        (b (- 1 y)))
+    (+ (* x (square a))
+       (* y b)
+       (* a b))))

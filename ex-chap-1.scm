@@ -136,3 +136,15 @@
 
 (crt 10)
 (crt 27)
+
+
+
+;;; 1.34
+(define (f g)
+  (g 2))
+
+(f square)
+
+(f (lambda (z) (* z (+ z 1))))
+
+(f f)
