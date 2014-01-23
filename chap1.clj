@@ -7,14 +7,11 @@
   [guess x]
   (average guess (/ x guess)))
 
-(defn abs [x]
-  (if (< x 0) (- x) x))
-
 (defn square [x]
   (* x x))
 
 (defn good-enough? [guess x]
-  (< (abs (- (square guess) x)) 0.001))
+  (< (Math/abs (- (square guess) x)) 0.001))
 
 (defn sqrt-iter [guess x]
   (if (good-enough? guess x)
@@ -29,12 +26,42 @@
 (sqrt (+ (sqrt 2) (sqrt 3)))
 (square (sqrt 1000))
 
+;; 再帰ではなく遅延シーケンスを使ってみた
+(defn imp2
+  "関数の部分適用を行いたいので、オリジナルと引数の順序を入れ替えて被開閉数を先に取るようにした"
+  [x guess]
+  (average guess (/ x guess)))
+
+(defn sqrt-seq
+  "被開閉数xの平方根候補の無限遅延リストを返す"
+  [guess x]
+  (iterate (partial imp2 x) guess))
+(take 5 (sqrt-seq 1.0 2))
+
+(defn good-enough?2
+  "関数の部分適用を行いたいので、オリジナルと引数の順序を入れ替えて被開閉数を先に取るようにした"
+  [x guess]
+  (< (Math/abs (- (square guess) x)) 0.001))
+
+(defn sqrt-filt
+  "遅延リストにgood-enough?2フィルターを適応する"
+  [guess x]
+  (first (take 1 (drop-while (complement (partial good-enough?2 x)) (sqrt-seq guess x)))))
+
+(defn sqrt2 [x]
+  (sqrt-filt 1.0 x))
+
+(sqrt2 2)
+(sqrt 2)
+(sqrt2 9)
+(sqrt 9)
+
 
 ;;; 問題1.7（改良型平方根）
 (defn good-enough-imp?
   "前回の予測値と今回の予測値の変化量に注目する"
   [guess previous-guess]
-  (< (abs (- 1 (/ guess previous-guess))) 0.001))
+  (< (Math/abs (- 1 (/ guess previous-guess))) 0.001))
 
 (defn sqrt-iter-imp [guess previous-guess x]
   (if (good-enough-imp? guess previous-guess)
