@@ -28,21 +28,21 @@
 
 ;; 再帰ではなく遅延シーケンスを使ってみた
 (defn sqrt2 [x]
-  (defn good-enough? [guess]
+  (defn good-enough?2 [guess]
     (< (Math/abs (- (square guess) x)) 0.001))
 
-  (defn improve [guess]
+  (defn improve2 [guess]
     (average guess (/ x guess)))
 
   (defn sqrt-seq
     "被開閉数xの平方根候補の無限遅延リストを返す"
     [guess]
-    (iterate (partial improve) guess))
+    (iterate (partial improve2) guess))
 
   (defn sqrt-filt
     "遅延リストにgood-enough?フィルターを適応する"
     [guess]
-    (first (take 1 (drop-while (complement (partial good-enough?)) (sqrt-seq guess)))))
+    (first (take 1 (drop-while (complement (partial good-enough?2)) (sqrt-seq guess)))))
 
   (sqrt-filt 1.0))
 
@@ -102,15 +102,15 @@
     (* n (factorial (- n 1)))))
 
 ;; 反復的プロセス
-(defn factorial [n]
-  (fact-iter 1 1 n))
-
 (defn fact-iter [product counter max-count]
   (if (> counter max-count)
     product
     (fact-iter (* counter product)
                (+ counter 1)
                max-count)))
+
+(defn factorial [n]
+  (fact-iter 1 1 n))
 
 
 ;;; 問題1.10
@@ -132,10 +132,10 @@
                  (fib-tree (- n 2)))))
 
 ;; 反復的なFibonacci
-(defn fib [n]
-  (fib-iter 1 0 n))
-
 (defn fib-iter [a b count]
   (if (= count 0)
     b
     (fib-iter (+ a b) a (dec count))))
+
+(defn fib [n]
+  (fib-iter 1 0 n))
