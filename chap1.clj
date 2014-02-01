@@ -27,29 +27,24 @@
 (square (sqrt 1000))
 
 ;; 再帰ではなく遅延シーケンスを使ってみた
-(defn imp2
-  "関数の部分適用を行いたいので、オリジナルと引数の順序を入れ替えて被開閉数を先に取るようにした"
-  [x guess]
-  (average guess (/ x guess)))
-
-(defn sqrt-seq
-  "被開閉数xの平方根候補の無限遅延リストを返す"
-  [guess x]
-  (iterate (partial imp2 x) guess))
-(take 5 (sqrt-seq 1.0 2))
-
-(defn good-enough?2
-  "関数の部分適用を行いたいので、オリジナルと引数の順序を入れ替えて被開閉数を先に取るようにした"
-  [x guess]
-  (< (Math/abs (- (square guess) x)) 0.001))
-
-(defn sqrt-filt
-  "遅延リストにgood-enough?2フィルターを適応する"
-  [guess x]
-  (first (take 1 (drop-while (complement (partial good-enough?2 x)) (sqrt-seq guess x)))))
-
 (defn sqrt2 [x]
-  (sqrt-filt 1.0 x))
+  (defn good-enough? [guess]
+    (< (Math/abs (- (square guess) x)) 0.001))
+
+  (defn improve [guess]
+    (average guess (/ x guess)))
+
+  (defn sqrt-seq
+    "被開閉数xの平方根候補の無限遅延リストを返す"
+    [guess]
+    (iterate (partial improve) guess))
+
+  (defn sqrt-filt
+    "遅延リストにgood-enough?フィルターを適応する"
+    [guess]
+    (first (take 1 (drop-while (complement (partial good-enough?)) (sqrt-seq guess)))))
+
+  (sqrt-filt 1.0))
 
 (sqrt2 2)
 (sqrt 2)
@@ -99,4 +94,48 @@
 (cube (crt 27))
 
 
-;;; 1.1.8
+;;; 1.2.1 線形再帰と反復
+;; 再帰的プロセス
+(defn factorial [n]
+  (if (= n 1)
+    1
+    (* n (factorial (- n 1)))))
+
+;; 反復的プロセス
+(defn factorial [n]
+  (fact-iter 1 1 n))
+
+(defn fact-iter [product counter max-count]
+  (if (> counter max-count)
+    product
+    (fact-iter (* counter product)
+               (+ counter 1)
+               max-count)))
+
+
+;;; 問題1.10
+;; Ackermann関数
+(defn A [x y]
+  (cond (= y 0) 0
+        (= x 0) (* 2 y)
+        (= y 1) 2
+        :else (A (- x 1)
+                 (A x (- y 1)))))
+
+
+;;; 1.2.2 木構造再帰
+;; 木構造再帰的なFibonacci
+(defn fib-tree [n]
+  (cond (= n 0) 0
+        (= n 1) 1
+        :else (+ (fib-tree (- n 1))
+                 (fib-tree (- n 2)))))
+
+;; 反復的なFibonacci
+(defn fib [n]
+  (fib-iter 1 0 n))
+
+(defn fib-iter [a b count]
+  (if (= count 0)
+    b
+    (fib-iter (+ a b) a (dec count))))
