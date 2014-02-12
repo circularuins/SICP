@@ -194,6 +194,10 @@
 
 
 ;;; 問題1.14
+; 省略
+
+
+;;; 問題1.15
 (defn p [x]
   (- (* 3 x) (* 4 (cube x))))
 (defn sine [angle]
@@ -202,3 +206,28 @@
     (p (sine (/ angle 3.0)))))
 ; a. 5回
 ; b. うっ
+
+
+;;; 1.2.4 べき乗
+; 線形再帰的
+(defn expt [b n]
+  (if (= n 0)
+    1
+    (* b (expt b (- n 1)))))
+; 線形反復的
+(defn expt-iter [b n]
+  (defn iter [b counter product]
+    (if (= counter 0)
+      product
+      (iter b
+            (dec counter)
+            (* b product))))
+  (iter b n 1))
+; 逐次平方
+(defn fast-expt [b n]
+  (cond (= n 0) 1
+        (even? n) (square (fast-expt b (/ n 2)))
+        :else (* b (fast-expt b (- n 1)))))
+
+
+;;; 問題1.16
