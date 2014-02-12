@@ -231,3 +231,7 @@
 
 
 ;;; 問題1.16
+(defn fast-expt2 [b n a]
+  (cond (= n 0) a
+        (even? n) (fast-expt2 (square b) (/ n 2) a)
+        :else (fast-expt2 b (dec n) (* a b))))
